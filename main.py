@@ -26,12 +26,14 @@ class PySnake(Snake):
 
 class PyWall(Wall):
     def render(self):
-        pygame.draw.rect(screen, PyGameController.BLUE, [self._x*SQUARE_SCALE, self._y*SQUARE_SCALE, SQUARE_SCALE, SQUARE_SCALE])
+        x, y = self
+        pygame.draw.rect(screen, PyGameController.BLUE, [x*SQUARE_SCALE, y*SQUARE_SCALE, SQUARE_SCALE, SQUARE_SCALE])
 
 
 class PyApple(Apple):
     def render(self):
-        pygame.draw.rect(screen, PyGameController.YELLOW, [self._x*SQUARE_SCALE, self._y*SQUARE_SCALE, SQUARE_SCALE, SQUARE_SCALE])
+        x, y = self
+        pygame.draw.rect(screen, PyGameController.YELLOW, [x*SQUARE_SCALE, y*SQUARE_SCALE, SQUARE_SCALE, SQUARE_SCALE])
 
 
 class PyGameController(GameController):
@@ -68,20 +70,6 @@ class PyGameController(GameController):
         super(PyGameController, self).render()
         pygame.display.flip()
 
-
-# class A(list):
-#     def __init__(self, x, y):
-#         self.append(x)
-#         self.append(y)
-#
-# class B(list):
-#     def __init__(self, x, y):
-#         self.append(x)
-#         self.append(y)
-#
-#
-# print A(0, 1) in [B(0, 0), B(0, 1), B(0, 2)]
-# print A(1, 1) in [B(0, 0), B(0, 1), B(0, 2)]
 
 # while True:
 ctrl = PyGameController.get()

@@ -19,13 +19,13 @@ class Snake(object):
 
     def __init__(self, x=1, y=1, direction=RIGHT, length=5):
         self._dir_buffer = deque([direction])
-        self._segments = [(x, y)]
+        self._segments = [[x, y]]
         self.add_length(length)
 
     def add_length(self, new_length):
         for i in range(0, new_length):
             self._length += 1
-            self._segments.append((-1, -1))  # Add just off screen
+            self._segments.append([-1, -1])  # Add just off screen
 
     def set_direction(self, new_direction):
         if self._dir_buffer[-1] != new_direction and self._OPPOSITE_MAP[self._dir_buffer[-1]] != new_direction:
@@ -50,7 +50,7 @@ class Snake(object):
         for i in range(self._length-2, -1, -1):
             self._segments[i+1] = self._segments[i]
 
-        self._segments[0] = (snake_x, snake_y)
+        self._segments[0] = [snake_x, snake_y]
 
     def get_coord(self):  # Minor hack until SnakeSegment implemented as Renderable
         return self._segments[0]

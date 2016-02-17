@@ -1,9 +1,5 @@
-from mixins import Renderable, RenderableContainer
+from mixins import Renderable
+
 
 class Wall(Renderable):
     pass
-
-
-class WallContainer(RenderableContainer):
-    pass
-

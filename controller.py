@@ -3,8 +3,8 @@ from time import sleep
 import sys
 
 from snake import Snake
-from wall import Wall, WallContainer
-from apple import Apple, AppleContainer
+from wall import Wall
+from apple import Apple
 from exception import LevelNotFoundException, GameOverException
 
 
@@ -75,16 +75,17 @@ class GameController(object):
         for apple in self._apples:
             apple.render()
 
-    def _check_collisions(self):
-        snake_head_coord = self._snake.get_head()
-
-        if snake_head_coord in self._snake.get_tail() or self._snake in self._walls:
+    def _check_collision_self(self):
+        if self._snake.get_head() in self._snake.get_tail():
             raise GameOverException()
 
-    def _check_eat_apple(self):
-        # snake_head_coord = self._snake.get_head()
-        if self._snake in self._apples:
-            index = self._apples.index(self._snake)
+    def _check_collision_wall(self):
+        if self._snake.get_head() in self._walls:
+            raise GameOverException()
+
+    def _check_collision_apple(self):
+        if self._snake.get_head() in self._apples:
+            index = self._apples.index(self._snake.get_head())
             self._apples.pop(index)
             self._snake.add_length(self.PER_APPLE)
             self._game_speed -= self.DIFFICULTY
@@ -96,8 +97,9 @@ class GameController(object):
 
     def main_loop(self):
         self._snake.move()
-        self._check_collisions()
-        self._check_eat_apple()
+        self._check_collision_self()
+        self._check_collision_wall()
+        self._check_collision_apple()
         self.render()
 
     @classmethod
@@ -117,9 +119,9 @@ class GameController(object):
                 [cls.WallCls(51, i) for i in range(49, 51)] + \
                 [cls.WallCls(49, i) for i in range(49, 51)] + \
                 [cls.WallCls(50, i) for i in range(49, 51)]
-            walls = WallContainer(outer_walls + inner_walls)
+            walls = outer_walls + inner_walls
 
-            apples = AppleContainer()
+            apples = []
             for i in range(0, cls.MAX_APPLES):
                 while True:
                     apple = cls.AppleCls(randint(1, 99), randint(1, 99))

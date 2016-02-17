@@ -1,8 +1,5 @@
-from mixins import Renderable, RenderableContainer
+from mixins import Renderable
 
 
 class Apple(Renderable):
-    pass
-
-class AppleContainer(RenderableContainer):
     pass
