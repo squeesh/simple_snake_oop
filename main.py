@@ -1,7 +1,7 @@
 import pygame
 
 from controller import GameController
-from snake import Snake
+from snake import Snake, SnakeSegment
 from wall import Wall
 from apple import Apple
 
@@ -17,11 +17,14 @@ LENGTH_PER_APPLE = 10
 screen = pygame.display.set_mode(SIZE)
 
 
-class PySnake(Snake):
+class PySnakeSegment(SnakeSegment):
     def render(self):
-        for i in range(0, self._length):
-            seg_x, seg_y = self._segments[i]
-            pygame.draw.rect(screen, PyGameController.GREEN, [seg_x*SQUARE_SCALE, seg_y*SQUARE_SCALE, SQUARE_SCALE, SQUARE_SCALE])
+        x, y = self
+        pygame.draw.rect(screen, PyGameController.GREEN, [x*SQUARE_SCALE, y*SQUARE_SCALE, SQUARE_SCALE, SQUARE_SCALE])
+
+
+class PySnake(Snake):
+    SnakeSegmentCls = PySnakeSegment
 
 
 class PyWall(Wall):

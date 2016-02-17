@@ -2,7 +2,7 @@ from random import randint
 from time import sleep
 import sys
 
-from snake import Snake
+from snake import Snake, SnakeSegment
 from wall import Wall
 from apple import Apple
 from exception import LevelNotFoundException, GameOverException
@@ -45,7 +45,6 @@ class GameController(object):
         self._game_speed = self.START_SPEED
         self._snake = self.SnakeCls()
         self._walls, self._apples = self.generate_level(1)
-
 
     @classmethod
     def get(cls):
