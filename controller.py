@@ -34,8 +34,10 @@ class GameController(object):
 
     _controller = None
 
-    _halt = False
-    _pause = False
+    HALT_PLAYER_WIN = 'win'
+    HALT_PLAYER_LOSE = 'lose'
+
+    _halt = None
 
     _snake = None
     _walls = ()
@@ -44,7 +46,6 @@ class GameController(object):
     def __init__(self):
         self._game_speed = self.START_SPEED
         self._snake = self.SnakeCls()
-        self._walls, self._apples = self.generate_level(1)
 
     @classmethod
     def get(cls):
@@ -52,11 +53,12 @@ class GameController(object):
             cls._controller = cls()
         return cls._controller
 
+    @classmethod
+    def destroy(cls):
+        cls._controller = None
+
     def exit(self):
         sys.exit()
-
-    def halt(self):
-        self._halt = True
 
     def key_down(self, key):
         if key == self.KEY_ESC:
@@ -76,11 +78,11 @@ class GameController(object):
 
     def _check_collision_self(self):
         if self._snake.get_head() in self._snake.get_tail():
-            raise GameOverException()
+            self._halt = self.HALT_PLAYER_LOSE
 
     def _check_collision_wall(self):
         if self._snake.get_head() in self._walls:
-            raise GameOverException()
+            self._halt = self.HALT_PLAYER_LOSE
 
     def _check_collision_apple(self):
         if self._snake.get_head() in self._apples:
@@ -89,21 +91,22 @@ class GameController(object):
             self._snake.add_length(self.PER_APPLE)
             self._game_speed -= self.DIFFICULTY
 
-    def start(self):
-        while not self._halt:
-            self.main_loop()
-            sleep(self._game_speed)
-
-    def main_loop(self):
-        self._snake.move()
-        self._check_collision_self()
-        self._check_collision_wall()
-        self._check_collision_apple()
-        self.render()
+        if not self._apples:
+            self._halt = self.HALT_PLAYER_WIN
 
     @classmethod
-    def generate_level(cls, level):
+    def _generate_level(cls, level):
         level -= 1  # convert to 0 base
+
+        def _gen_apples(walls):
+            apples = []
+            for i in range(0, cls.MAX_APPLES):
+                while True:
+                    apple = cls.AppleCls(randint(1, 99), randint(1, 99))
+                    if apple not in walls and apple not in apples:
+                        apples.append(apple)
+                        break
+            return apples
 
         def _level_1():
             outer_walls = \
@@ -118,22 +121,41 @@ class GameController(object):
                 [cls.WallCls(51, i) for i in range(49, 51)] + \
                 [cls.WallCls(49, i) for i in range(49, 51)] + \
                 [cls.WallCls(50, i) for i in range(49, 51)]
-            walls = outer_walls + inner_walls
+            return outer_walls + inner_walls
 
-            apples = []
-            for i in range(0, cls.MAX_APPLES):
-                while True:
-                    apple = cls.AppleCls(randint(1, 99), randint(1, 99))
-                    if apple not in walls and apple not in apples:
-                        apples.append(apple)
-                        break
+        def _level_2():
+            outer_walls = \
+                [cls.WallCls(i, 0) for i in range(1, 99)] + \
+                [cls.WallCls(i, 99) for i in range(1, 99)] + \
+                [cls.WallCls(0, i) for i in range(1, 99)] + \
+                [cls.WallCls(99, i) for i in range(1, 99)]
+            inner_walls = \
+                [cls.WallCls(i, 49) for i in range(10, 90)] + \
+                [cls.WallCls(i, 50) for i in range(10, 90)]
+            return outer_walls + inner_walls
 
-            return walls, apples
-
-        available_levels = [_level_1]#, _level_2, _level_3]
+        available_levels = [_level_1, _level_2]#, _level_3]
 
         if level in range(0, len(available_levels)):
-            return available_levels[level]()
+            level_walls = available_levels[level]()
+            return level_walls, _gen_apples(level_walls)
 
         raise LevelNotFoundException()
+
+    def get_halt_reason(self):
+        return self._halt
+
+    def start(self, starting_level):
+        self._walls, self._apples = self._generate_level(starting_level)
+
+        while not self._halt:
+            self.main_loop()
+            sleep(self._game_speed)
+
+    def main_loop(self):
+        self._snake.move()
+        self._check_collision_self()
+        self._check_collision_wall()
+        self._check_collision_apple()
+        self.render()
 

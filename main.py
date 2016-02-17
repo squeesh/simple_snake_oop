@@ -1,4 +1,5 @@
 import pygame
+import sys
 
 from controller import GameController
 from snake import Snake, SnakeSegment
@@ -11,32 +12,40 @@ SCALE = 2 # 1 for 1080p 2 for 2160p
 SIZE = WIDTH, HEIGHT = (800*SCALE, 800*SCALE)
 SQUARE_SCALE = 8*SCALE # size of squares
 
-DIFFICULTY_PER_APPLE = 0.0065 # higher = harder...
-LENGTH_PER_APPLE = 10
+BLACK = (0, 0, 0)
+BLUE = (0, 0, 255)
+GREEN = (0, 255, 0)
+RED = (255, 0, 0)
+YELLOW = (255, 255, 0)
+
+MAX_APPLES = 15
+STARTING_LEVEL = 1
 
 screen = pygame.display.set_mode(SIZE)
 
 
+def render_obj(self):
+    x, y = self
+    pygame.draw.rect(screen, self.color, [x*SQUARE_SCALE, y*SQUARE_SCALE, SQUARE_SCALE, SQUARE_SCALE])
+
+
 class PySnakeSegment(SnakeSegment):
-    def render(self):
-        x, y = self
-        pygame.draw.rect(screen, PyGameController.GREEN, [x*SQUARE_SCALE, y*SQUARE_SCALE, SQUARE_SCALE, SQUARE_SCALE])
+    color = GREEN
+    render = render_obj
+
+
+class PyWall(Wall):
+    color = BLUE
+    render = render_obj
+
+
+class PyApple(Apple):
+    color = YELLOW
+    render = render_obj
 
 
 class PySnake(Snake):
     SnakeSegmentCls = PySnakeSegment
-
-
-class PyWall(Wall):
-    def render(self):
-        x, y = self
-        pygame.draw.rect(screen, PyGameController.BLUE, [x*SQUARE_SCALE, y*SQUARE_SCALE, SQUARE_SCALE, SQUARE_SCALE])
-
-
-class PyApple(Apple):
-    def render(self):
-        x, y = self
-        pygame.draw.rect(screen, PyGameController.YELLOW, [x*SQUARE_SCALE, y*SQUARE_SCALE, SQUARE_SCALE, SQUARE_SCALE])
 
 
 class PyGameController(GameController):
@@ -44,11 +53,7 @@ class PyGameController(GameController):
     WallCls = PyWall
     AppleCls = PyApple
 
-    BLACK = (0, 0, 0)
-    BLUE = (0, 0, 255)
-    GREEN = (0, 255, 0)
-    RED = (255, 0, 0)
-    YELLOW = (255, 255, 0)
+    MAX_APPLES = MAX_APPLES
 
     KEY_MAP = {
         pygame.K_UP: GameController.KEY_UP,
@@ -69,12 +74,47 @@ class PyGameController(GameController):
         super(PyGameController, self).main_loop()
 
     def render(self):
-        screen.fill(self.BLACK)
+        screen.fill(BLACK)
         super(PyGameController, self).render()
         pygame.display.flip()
 
 
-# while True:
-ctrl = PyGameController.get()
-ctrl.start()
+def render_string(string, color):
+    screen.fill(BLACK)
+    PyGameController.get().render()
+    font = pygame.font.Font(None, 36*SCALE)
+    text = font.render(string, 1, color)
+    textpos = text.get_rect(centerx=WIDTH/2, centery=HEIGHT/4)
+    screen.blit(text, textpos)
+    pygame.display.flip()
+
+
+def pause_until_esc_or_exit():
+    new_game = False
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                new_game = True
+
+        if new_game:
+            break
+
+level = STARTING_LEVEL
+while True:
+    ctrl = PyGameController.get()
+    ctrl.start(level)
+    halt_reason = ctrl.get_halt_reason()
+    if halt_reason == PyGameController.HALT_PLAYER_WIN:
+        render_string('You Win! - Press ESC for next level', GREEN)
+        level += 1
+    else:
+        render_string('You Lose! - Press ESC for new game', RED)
+        level = STARTING_LEVEL
+    pause_until_esc_or_exit()
+    PyGameController.destroy()
+
 
