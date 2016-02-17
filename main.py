@@ -1,7 +1,10 @@
 import pygame
+
 from controller import GameController
 from snake import Snake
 from wall import Wall
+from apple import Apple
+
 pygame.init()
 
 SCALE = 2 # 1 for 1080p 2 for 2160p
@@ -26,9 +29,15 @@ class PyWall(Wall):
         pygame.draw.rect(screen, PyGameController.BLUE, [self._x*SQUARE_SCALE, self._y*SQUARE_SCALE, SQUARE_SCALE, SQUARE_SCALE])
 
 
+class PyApple(Apple):
+    def render(self):
+        pygame.draw.rect(screen, PyGameController.YELLOW, [self._x*SQUARE_SCALE, self._y*SQUARE_SCALE, SQUARE_SCALE, SQUARE_SCALE])
+
+
 class PyGameController(GameController):
     SnakeCls = PySnake
     WallCls = PyWall
+    AppleCls = PyApple
 
     BLACK = (0, 0, 0)
     BLUE = (0, 0, 255)

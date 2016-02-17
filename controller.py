@@ -1,13 +1,17 @@
+from random import randint
 from time import sleep
 import sys
+
 from snake import Snake
 from wall import Wall
+from apple import Apple
 from exception import LevelNotFoundException
 
 
 class GameController(object):
     SnakeCls = Snake
     WallCls = Wall
+    AppleCls = Apple
 
     KEY_UP = 'u'
     KEY_DOWN = 'd'
@@ -24,7 +28,9 @@ class GameController(object):
 
     DIFFICULTY = 0.0065 # higher = harder...
     PER_APPLE = 10
+
     START_SPEED = 0.1
+    MAX_APPLES = 15
 
     _controller = None
 
@@ -38,7 +44,7 @@ class GameController(object):
     def __init__(self):
         self._game_speed = self.START_SPEED
         self._snake = self.SnakeCls()
-        self._walls = self.generate_level(1)
+        self._walls, self._apples = self.generate_level(1)
 
     @classmethod
     def get(cls):
@@ -94,7 +100,21 @@ class GameController(object):
                 [cls.WallCls(51, i) for i in range(49, 51)] + \
                 [cls.WallCls(49, i) for i in range(49, 51)] + \
                 [cls.WallCls(50, i) for i in range(49, 51)]
-            return tuple(outer_walls + inner_walls)
+            walls = tuple(outer_walls + inner_walls)
+
+            wall_coords = [wall.get_coord() for wall in walls]
+
+            apples = []
+            apple_coords = []
+            for i in range(0, cls.MAX_APPLES):
+                while True:
+                    apple_coord = (randint(1, 99), randint(1, 99))
+                    if apple_coord not in wall_coords and apple_coord not in apple_coords:
+                        apples.append(cls.AppleCls(*apple_coord))
+                        apple_coords.append(apple_coord)
+                        break
+
+            return walls, apples
 
         avaialable_levels = [_level_1]#, _level_2, _level_3]
 

@@ -1,4 +1,4 @@
-class Wall(object):
+class Apple(object):
     def __init__(self, x, y):
         self._x = x
         self._y = y
@@ -8,6 +8,3 @@ class Wall(object):
 
     def render(self):
         raise NotImplementedError
-
-
-
