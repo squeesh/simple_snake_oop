@@ -17,7 +17,7 @@ class Snake(object):
     _segments = ()
     _length = 0
 
-    def __init__(self, x=0, y=0, direction=RIGHT, length=5):
+    def __init__(self, x=1, y=1, direction=RIGHT, length=5):
         self._dir_buffer = deque([direction])
         self._segments = [(x, y)]
         self.set_length(length)
@@ -56,5 +56,5 @@ class Snake(object):
         raise NotImplementedError
 
 
-class SnakeSegment(object):
-    pass
+# class SnakeSegment(object):
+#     pass

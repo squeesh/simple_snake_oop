@@ -1,6 +1,7 @@
 import pygame
 from controller import GameController
 from snake import Snake
+from wall import Wall
 pygame.init()
 
 SCALE = 2 # 1 for 1080p 2 for 2160p
@@ -20,8 +21,14 @@ class PySnake(Snake):
             pygame.draw.rect(screen, PyGameController.GREEN, [seg_x*SQUARE_SCALE, seg_y*SQUARE_SCALE, SQUARE_SCALE, SQUARE_SCALE])
 
 
+class PyWall(Wall):
+    def render(self):
+        pygame.draw.rect(screen, PyGameController.BLUE, [self._x*SQUARE_SCALE, self._y*SQUARE_SCALE, SQUARE_SCALE, SQUARE_SCALE])
+
+
 class PyGameController(GameController):
     SnakeCls = PySnake
+    WallCls = PyWall
 
     BLACK = (0, 0, 0)
     BLUE = (0, 0, 255)
@@ -36,6 +43,8 @@ class PyGameController(GameController):
         pygame.K_RIGHT: GameController.KEY_RIGHT,
         pygame.K_ESCAPE: GameController.KEY_ESC,
     }
+
+    # START_SPEED = 0.5
 
     def main_loop(self):
         for event in pygame.event.get():

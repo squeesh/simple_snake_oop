@@ -1,0 +1,2 @@
+class LevelNotFoundException(Exception):
+    pass
