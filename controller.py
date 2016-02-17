@@ -3,8 +3,8 @@ from time import sleep
 import sys
 
 from snake import Snake
-from wall import Wall
-from apple import Apple
+from wall import Wall, WallContainer
+from apple import Apple, AppleContainer
 from exception import LevelNotFoundException, GameOverException
 
 
@@ -46,6 +46,7 @@ class GameController(object):
         self._snake = self.SnakeCls()
         self._walls, self._apples = self.generate_level(1)
 
+
     @classmethod
     def get(cls):
         if not cls._controller:
@@ -76,21 +77,19 @@ class GameController(object):
 
     def _check_collisions(self):
         snake_head_coord = self._snake.get_head()
-        # wall_coords = [wall.get_coord() for wall in self._walls]
-        # apple_coords = [apple.get_coord() for apple in self._apples]
 
-        if snake_head_coord in self._snake.get_tail() or snake_head_coord in self._walls:
+        if snake_head_coord in self._snake.get_tail() or self._snake in self._walls:
             raise GameOverException()
 
     def _check_eat_apple(self):
-        snake_head_coord = self._snake.get_head()
-        if snake_head_coord in self._apples:
-            index = self._apples.index(snake_head_coord)
+        # snake_head_coord = self._snake.get_head()
+        if self._snake in self._apples:
+            index = self._apples.index(self._snake)
             self._apples.pop(index)
             self._snake.add_length(self.PER_APPLE)
             self._game_speed -= self.DIFFICULTY
 
-    def run(self):
+    def start(self):
         while not self._halt:
             self.main_loop()
             sleep(self._game_speed)
@@ -107,28 +106,25 @@ class GameController(object):
 
         def _level_1():
             outer_walls = \
-                [(i, 0) for i in range(1, 99)] + \
-                [(i, 99) for i in range(1, 99)] + \
-                [(0, i) for i in range(1, 99)] + \
-                [(99, i) for i in range(1, 99)]
+                [cls.WallCls(i, 0) for i in range(1, 99)] + \
+                [cls.WallCls(i, 99) for i in range(1, 99)] + \
+                [cls.WallCls(0, i) for i in range(1, 99)] + \
+                [cls.WallCls(99, i) for i in range(1, 99)]
             inner_walls = \
-                [(i, 48) for i in range(48, 52)] + \
-                [(i, 51) for i in range(48, 52)] + \
-                [(48, i) for i in range(49, 51)] + \
-                [(51, i) for i in range(49, 51)] + \
-                [(49, i) for i in range(49, 51)] + \
-                [(50, i) for i in range(49, 51)]
-            walls = tuple(outer_walls + inner_walls)
+                [cls.WallCls(i, 48) for i in range(48, 52)] + \
+                [cls.WallCls(i, 51) for i in range(48, 52)] + \
+                [cls.WallCls(48, i) for i in range(49, 51)] + \
+                [cls.WallCls(51, i) for i in range(49, 51)] + \
+                [cls.WallCls(49, i) for i in range(49, 51)] + \
+                [cls.WallCls(50, i) for i in range(49, 51)]
+            walls = WallContainer(outer_walls + inner_walls)
 
-            # wall_coords = [wall.get_coord() for wall in walls]
-
-            apples = []
-            # apple_coords = []
+            apples = AppleContainer()
             for i in range(0, cls.MAX_APPLES):
                 while True:
-                    apple_coord = (randint(1, 99), randint(1, 99))
-                    if apple_coord not in walls and apple_coord not in apples:
-                        apples.append(apple_coord)
+                    apple = cls.AppleCls(randint(1, 99), randint(1, 99))
+                    if apple not in walls and apple not in apples:
+                        apples.append(apple)
                         break
 
             return walls, apples

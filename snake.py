@@ -52,6 +52,9 @@ class Snake(object):
 
         self._segments[0] = (snake_x, snake_y)
 
+    def get_coord(self):  # Minor hack until SnakeSegment implemented as Renderable
+        return self._segments[0]
+
     def get_head(self):
         return self._segments[0]
 

@@ -24,24 +24,20 @@ class PySnake(Snake):
             pygame.draw.rect(screen, PyGameController.GREEN, [seg_x*SQUARE_SCALE, seg_y*SQUARE_SCALE, SQUARE_SCALE, SQUARE_SCALE])
 
 
-# class PyWall(Wall):
-#     def render(self):
-#         pygame.draw.rect(screen, PyGameController.BLUE, [self._x*SQUARE_SCALE, self._y*SQUARE_SCALE, SQUARE_SCALE, SQUARE_SCALE])
-#
-#
-# class PyApple(Apple):
-#     def render(self):
-#         pygame.draw.rect(screen, PyGameController.YELLOW, [self._x*SQUARE_SCALE, self._y*SQUARE_SCALE, SQUARE_SCALE, SQUARE_SCALE])
+class PyWall(Wall):
+    def render(self):
+        pygame.draw.rect(screen, PyGameController.BLUE, [self._x*SQUARE_SCALE, self._y*SQUARE_SCALE, SQUARE_SCALE, SQUARE_SCALE])
 
 
-def render_obj(x, y, color):
-    pygame.draw.rect(screen, color, [x*SQUARE_SCALE, y*SQUARE_SCALE, SQUARE_SCALE, SQUARE_SCALE])
+class PyApple(Apple):
+    def render(self):
+        pygame.draw.rect(screen, PyGameController.YELLOW, [self._x*SQUARE_SCALE, self._y*SQUARE_SCALE, SQUARE_SCALE, SQUARE_SCALE])
 
 
 class PyGameController(GameController):
     SnakeCls = PySnake
-    # WallCls = PyWall
-    # AppleCls = PyApple
+    WallCls = PyWall
+    AppleCls = PyApple
 
     BLACK = (0, 0, 0)
     BLUE = (0, 0, 255)
@@ -69,18 +65,25 @@ class PyGameController(GameController):
 
     def render(self):
         screen.fill(self.BLACK)
-        # TODO: This is crap... OOP this crap
-        for wall in self._walls:
-            render_obj(color=self.BLUE, *wall)
-
-        self._snake.render()
-
-        for apple in self._apples:
-            render_obj(color=self.YELLOW, *apple)
+        super(PyGameController, self).render()
         pygame.display.flip()
 
 
+# class A(list):
+#     def __init__(self, x, y):
+#         self.append(x)
+#         self.append(y)
+#
+# class B(list):
+#     def __init__(self, x, y):
+#         self.append(x)
+#         self.append(y)
+#
+#
+# print A(0, 1) in [B(0, 0), B(0, 1), B(0, 2)]
+# print A(1, 1) in [B(0, 0), B(0, 1), B(0, 2)]
+
 # while True:
 ctrl = PyGameController.get()
-ctrl.run()
+ctrl.start()
 

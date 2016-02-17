@@ -1,10 +1,8 @@
-class Apple(object):
-    def __init__(self, x, y):
-        self._x = x
-        self._y = y
+from mixins import Renderable, RenderableContainer
 
-    def get_coord(self):
-        return (self._x, self._y)
 
-    def render(self):
-        raise NotImplementedError
+class Apple(Renderable):
+    pass
+
+class AppleContainer(RenderableContainer):
+    pass
