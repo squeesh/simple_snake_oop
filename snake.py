@@ -20,9 +20,9 @@ class Snake(object):
     def __init__(self, x=1, y=1, direction=RIGHT, length=5):
         self._dir_buffer = deque([direction])
         self._segments = [(x, y)]
-        self.set_length(length)
+        self.add_length(length)
 
-    def set_length(self, new_length):
+    def add_length(self, new_length):
         for i in range(0, new_length):
             self._length += 1
             self._segments.append((-1, -1))  # Add just off screen
@@ -51,6 +51,12 @@ class Snake(object):
             self._segments[i+1] = self._segments[i]
 
         self._segments[0] = (snake_x, snake_y)
+
+    def get_head(self):
+        return self._segments[0]
+
+    def get_tail(self):
+        return self._segments[1:]
 
     def render(self):
         raise NotImplementedError

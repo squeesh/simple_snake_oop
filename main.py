@@ -24,20 +24,24 @@ class PySnake(Snake):
             pygame.draw.rect(screen, PyGameController.GREEN, [seg_x*SQUARE_SCALE, seg_y*SQUARE_SCALE, SQUARE_SCALE, SQUARE_SCALE])
 
 
-class PyWall(Wall):
-    def render(self):
-        pygame.draw.rect(screen, PyGameController.BLUE, [self._x*SQUARE_SCALE, self._y*SQUARE_SCALE, SQUARE_SCALE, SQUARE_SCALE])
+# class PyWall(Wall):
+#     def render(self):
+#         pygame.draw.rect(screen, PyGameController.BLUE, [self._x*SQUARE_SCALE, self._y*SQUARE_SCALE, SQUARE_SCALE, SQUARE_SCALE])
+#
+#
+# class PyApple(Apple):
+#     def render(self):
+#         pygame.draw.rect(screen, PyGameController.YELLOW, [self._x*SQUARE_SCALE, self._y*SQUARE_SCALE, SQUARE_SCALE, SQUARE_SCALE])
 
 
-class PyApple(Apple):
-    def render(self):
-        pygame.draw.rect(screen, PyGameController.YELLOW, [self._x*SQUARE_SCALE, self._y*SQUARE_SCALE, SQUARE_SCALE, SQUARE_SCALE])
+def render_obj(x, y, color):
+    pygame.draw.rect(screen, color, [x*SQUARE_SCALE, y*SQUARE_SCALE, SQUARE_SCALE, SQUARE_SCALE])
 
 
 class PyGameController(GameController):
     SnakeCls = PySnake
-    WallCls = PyWall
-    AppleCls = PyApple
+    # WallCls = PyWall
+    # AppleCls = PyApple
 
     BLACK = (0, 0, 0)
     BLUE = (0, 0, 255)
@@ -53,8 +57,6 @@ class PyGameController(GameController):
         pygame.K_ESCAPE: GameController.KEY_ESC,
     }
 
-    # START_SPEED = 0.5
-
     def main_loop(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -67,7 +69,14 @@ class PyGameController(GameController):
 
     def render(self):
         screen.fill(self.BLACK)
-        super(PyGameController, self).render()
+        # TODO: This is crap... OOP this crap
+        for wall in self._walls:
+            render_obj(color=self.BLUE, *wall)
+
+        self._snake.render()
+
+        for apple in self._apples:
+            render_obj(color=self.YELLOW, *apple)
         pygame.display.flip()
 
 
